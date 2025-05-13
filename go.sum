@@ -91,6 +91,8 @@ github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
 github.com/ugorji/go/codec v1.2.12 h1:9LC83zGrHhuUA9l16C9AHXAqEV/2wBQ4nkvumAE65EE=
 github.com/ugorji/go/codec v1.2.12/go.mod h1:UNopzCgEMSXjBc6AOMqYvWC1ktqTAfzJZUZgYf6w6lg=
+github.com/urfave/cli/v3 v3.3.3 h1:byCBaVdIXuLPIDm5CYZRVG6NvT7tv1ECqdU4YzlEa3I=
+github.com/urfave/cli/v3 v3.3.3/go.mod h1:FJSKtM/9AiiTOJL4fJ6TbMUkxBXn7GO9guZqoZtpYpo=
 go.mau.fi/libsignal v0.1.2 h1:Vs16DXWxSKyzVtI+EEXLCSy5pVWzzCzp/2eqFGvLyP0=
 go.mau.fi/libsignal v0.1.2/go.mod h1:JpnLSSJptn/s1sv7I56uEMywvz8x4YzxeF5OzdPb6PE=
 go.mau.fi/util v0.8.6 h1:AEK13rfgtiZJL2YsNK+W4ihhYCuukcRom8WPP/w/L54=

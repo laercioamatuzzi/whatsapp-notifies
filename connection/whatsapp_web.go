@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"mime"
 	"net/url"
+	"os"
 	"time"
 	"whatsapp-notifies/utils"
 
@@ -21,8 +22,7 @@ import (
 )
 
 const (
-	LOGLEVEL   = "INFO"
-	SESSIONDIR = "/home/laercio/whatsapp-multidevice-session/"
+	LOGLEVEL = "INFO"
 )
 
 type WhatsAppWeb struct {
@@ -198,7 +198,7 @@ func (w *WhatsAppWeb) Login() {
 	store.DeviceProps.Os = &browser
 
 	dbLog := waLog.Stdout("Database", LOGLEVEL, true)
-	query := fmt.Sprintf("file:%s%s.db?_foreign_keys=on", SESSIONDIR, w.Number)
+	query := fmt.Sprintf("file:%s?_foreign_keys=on", os.Getenv("WHATSAPP_DB_PATH"))
 	container, err := sqlstore.New("sqlite3", query, dbLog)
 
 	if err != nil {
@@ -228,8 +228,6 @@ func (w *WhatsAppWeb) Login() {
 		return
 	}
 	w.client = client
-	fmt.Println(w.client.Store.ID)
-	fmt.Println(w.GetClientNumber())
 }
 
 func (w *WhatsAppWeb) Disconnect() {

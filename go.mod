@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/mattn/go-sqlite3 v1.14.28
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
+	github.com/urfave/cli/v3 v3.3.3
 	go.mau.fi/whatsmeow v0.0.0-20250501130609-4c93ee4e6efa
 	google.golang.org/protobuf v1.36.6
 )

@@ -56,9 +56,9 @@ func (a *Api) GetQRCode(c *gin.Context) {
 	version := [3]uint32{1, 0, 0}
 	store.SetOSInfo(browser, version)
 	store.DeviceProps.Os = &browser
-	source := "wpp-notify"
+	source := os.Getenv("WHATSAPP_DB_PATH")
 
-	whatsappClientDB := fmt.Sprintf("%s%s.db", connection.SESSIONDIR, source)
+	whatsappClientDB := fmt.Sprintf("%s.db", source)
 	query := fmt.Sprintf("file:%s?_foreign_keys=on", whatsappClientDB)
 	container, err := sqlstore.New("sqlite3", query, nil)
 
