@@ -22,10 +22,12 @@ import (
 type Api struct {
 	r           *gin.Engine
 	WhatsappWeb connection.WhatsAppWeb
+	SqliteConn  connection.SqliteConn
 }
 
 func (a *Api) init() {
 	a.r = gin.Default()
+	a.WhatsappWeb = connection.WhatsAppWeb{Number: connection.WHATSAPPDB}
 	a.WhatsappWeb.Login()
 
 	a.r.Handle("GET", "ping", a.Ping)
@@ -56,10 +58,8 @@ func (a *Api) GetQRCode(c *gin.Context) {
 	version := [3]uint32{1, 0, 0}
 	store.SetOSInfo(browser, version)
 	store.DeviceProps.Os = &browser
-	source := os.Getenv("WHATSAPP_DB_PATH")
 
-	whatsappClientDB := fmt.Sprintf("%s.db", source)
-	query := fmt.Sprintf("file:%s?_foreign_keys=on", whatsappClientDB)
+	query := fmt.Sprintf("file:%s?_foreign_keys=on", connection.WHATSAPPDB)
 	container, err := sqlstore.New("sqlite3", query, nil)
 
 	if err != nil {
@@ -91,12 +91,12 @@ func (a *Api) GetQRCode(c *gin.Context) {
 					w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
 					w.Write(png)
 					time.Sleep(time.Second * 30)
-					line := connection.WhatsAppWeb{Number: source}
+					line := connection.WhatsAppWeb{Number: connection.WHATSAPPDB}
 					line.Login()
 
 					if !line.IsConnected() {
 
-						os.Remove(whatsappClientDB)
+						os.Remove(connection.WHATSAPPDB)
 						return
 					}
 
@@ -186,10 +186,8 @@ func (a *Api) ScheduleMessage(c *gin.Context) {
 
 	}
 
-	sqliteConn := connection.SqliteConn{Database: "./foo.db"}
-
 	for _, jid := range jids {
-		sqliteConn.Insert(jid.User, json.Text, json.Date)
+		a.SqliteConn.Insert(jid.User, json.Text, json.Date)
 	}
 
 	c.JSON(200, gin.H{

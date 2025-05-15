@@ -25,6 +25,8 @@ const (
 	LOGLEVEL = "INFO"
 )
 
+var WHATSAPPDB = os.Getenv("WHATSAPP_NOTIFIES_CONFIG_PATH") + utils.WHATSAPP_DB_NAME
+
 type WhatsAppWeb struct {
 	client *whatsmeow.Client
 	Number string
@@ -198,7 +200,7 @@ func (w *WhatsAppWeb) Login() {
 	store.DeviceProps.Os = &browser
 
 	dbLog := waLog.Stdout("Database", LOGLEVEL, true)
-	query := fmt.Sprintf("file:%s?_foreign_keys=on", os.Getenv("WHATSAPP_DB_PATH"))
+	query := fmt.Sprintf("file:%s?_foreign_keys=on", WHATSAPPDB)
 	container, err := sqlstore.New("sqlite3", query, dbLog)
 
 	if err != nil {

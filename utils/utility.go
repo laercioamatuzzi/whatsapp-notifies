@@ -3,18 +3,19 @@ package utils
 import (
 	"bytes"
 	"fmt"
-	"github.com/disintegration/imaging"
 	"image/jpeg"
 	"log"
 	"math/rand"
 	"os"
 	"strings"
+
+	"github.com/disintegration/imaging"
 )
 
 const (
-	LogFile   = "/home/laercio/whatsapp-multidevice.log"
-	FatalFile = "/home/laercio/whatsapp-multidevice-fatal.log"
-	DEBUG     = false
+	DEBUG            = false
+	WHATSAPP_DB_NAME = "./whatsapp.db"
+	NOTIFIES_DB_NAME = "./notifies.db"
 )
 
 func GetThumbnail(filePath string) []byte {
@@ -47,7 +48,7 @@ func RandomString(n int) string {
 func Logging(text string) {
 
 	// If the file doesn't exist, create it or append to the file
-	file, err := os.OpenFile(LogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile(os.Getenv("WHATSAPP_NOTIFIES_CONFIG_PATH")+"/log.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		fmt.Println("Failed to open log file.", err)
 		return
@@ -65,7 +66,7 @@ func LoggingInfo(text string) {
 
 func LoggingDebug(text string) {
 
-	if DEBUG {
+	if os.Getenv("DEBUG") == "true" {
 		Logging(fmt.Sprintf("[DEBUG] %s", text))
 	}
 }
@@ -73,19 +74,6 @@ func LoggingDebug(text string) {
 func LoggingError(text string) {
 
 	Logging(fmt.Sprintf("[ERROR] %s", text))
-}
-
-func LoggingFatal(text string) {
-
-	// If the file doesn't exist, create it or append to the file
-	file, err := os.OpenFile(FatalFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-	log.SetOutput(file)
-
-	log.Fatalf(text)
 }
 
 func ValidLineFormat(number string) bool {

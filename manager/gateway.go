@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"os"
 	"whatsapp-notifies/connection"
 )
 
@@ -10,8 +9,7 @@ type Gateway struct {
 }
 
 func (g *Gateway) Init() {
-	sqliteConn := connection.SqliteConn{Database: os.Getenv("SQLITE_DB_PATH")}
-	g.sqliteConn = sqliteConn
+	g.sqliteConn = connection.SqliteConn{}
 
 }
 
