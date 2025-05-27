@@ -36,6 +36,12 @@ func (w *WhatsAppWeb) eventHandler(evt interface{}) {
 
 	switch v := evt.(type) {
 
+	case events.Connected:
+		fmt.Println("Connected")
+
+	case events.PairSuccess:
+		fmt.Println("PairSuccess")
+
 	case *events.Message:
 
 		if !v.Info.IsFromMe {

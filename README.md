@@ -20,7 +20,7 @@ This is a go application that allows you to schedule and send messages to your W
 
 #### Configuration
 
-1. Run `whatsapp-notifies config --all`
+1. Run `whatsapp-notifies config`
 2. Follow the instructions to scan the QR code with your WhatsApp account
 3. After the QR code is scanned, it will setup the database and the configuration is done
 4. Run `whatsapp-notifies start-app` to start the application

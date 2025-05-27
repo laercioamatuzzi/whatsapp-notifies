@@ -16,12 +16,14 @@ import (
 	"os"
 	"time"
 	"whatsapp-notifies/manager"
+	"whatsapp-notifies/utils"
 
 	"github.com/urfave/cli/v3"
 )
 
 func main() {
 
+	utils.LoadEnv()
 	api := manager.Api{}
 	gateway := manager.Gateway{}
 	cmd := &cli.Command{
@@ -36,7 +38,7 @@ func main() {
 					go api.Run()
 					time.Sleep(time.Second * 2)
 					for {
-						fmt.Println("Acess http://localhost:8080/qrcode press enter after the QR code is scanned...")
+						fmt.Println("Acess http://localhost:8080/qrcode scan the QR code with your WhatsApp and wait for the Login event: success message in the terminal, then pressn enter to finish.")
 						scanner = bufio.NewScanner(os.Stdin)
 						scanner.Scan()
 						if api.WhatsappWeb.IsConnected() {
@@ -52,7 +54,7 @@ func main() {
 				Name:  "start-app",
 				Usage: "start application",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					gateway.Init()
+					go gateway.Start()
 					api.Run()
 					return nil
 				},

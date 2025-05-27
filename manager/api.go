@@ -34,6 +34,7 @@ func (a *Api) init() {
 	a.r.Handle("GET", "qrcode", a.GetQRCode)
 	a.r.Handle("POST", "text", a.PostText)
 	a.r.Handle("POST", "schedule", a.ScheduleMessage)
+	a.r.Handle("GET", "schedule", a.GetScheduleMessages)
 
 }
 
@@ -192,6 +193,16 @@ func (a *Api) ScheduleMessage(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": "message scheduled",
+	})
+
+}
+
+func (a *Api) GetScheduleMessages(c *gin.Context) {
+
+	scheduleMessages := a.SqliteConn.GetScheduleMessages()
+
+	c.JSON(200, gin.H{
+		"message": scheduleMessages,
 	})
 
 }
