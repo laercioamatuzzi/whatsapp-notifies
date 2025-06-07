@@ -37,3 +37,34 @@ This is a go application that allows you to schedule and send messages to your W
 
 1. curl http://localhost:8080/schedule 
 
+
+### Endpoints
+
+#### ping
+
+```
+curl http://localhost:8080/ping
+```
+
+#### qrcode
+
+```
+curl http://localhost:8080/qrcode
+```
+
+#### text
+
+```
+curl -X POST -H "Content-Type: application/json" -d '{"phone":"<PHONE>","text":"<TEXT>"}' http://localhost:8080/text
+```
+
+#### schedule
+
+```
+curl -X POST -H "Content-Type: application/json" -d '{"phones":["<PHONE1>","<PHONE2>"],"text":"<TEXT>","date":"<DATE>"}' http://localhost:8080/schedule
+```
+
+#### get schedule messages
+
+```
+curl http://localhost:8080/schedule 
