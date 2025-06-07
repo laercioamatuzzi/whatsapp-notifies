@@ -1,13 +1,5 @@
 package main
 
-/* func main() {
-
-	api := manager.Api{WhatsappWeb: connection.WhatsAppWeb{Number: "wpp-notify"}}
-	api.Run()
-
-}
-*/
-
 import (
 	"bufio"
 	"context"
@@ -21,6 +13,10 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+const (
+	VERSION = "0.0.1"
+)
+
 func main() {
 
 	utils.LoadEnv()
@@ -29,8 +25,9 @@ func main() {
 	cmd := &cli.Command{
 		Commands: []*cli.Command{
 			{
-				Name:  "config",
-				Usage: "./whatsapp-notifies config",
+				Name:    "config",
+				Aliases: []string{"-c"},
+				Usage:   "./whatsapp-notifies config",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					fmt.Println("Hello, press enter to start the configuration process, after the api is running acess http://localhost:8080/qrcode to scan the QR code with your WhatsApp account...")
 					scanner := bufio.NewScanner(os.Stdin)
@@ -60,8 +57,9 @@ func main() {
 				},
 			},
 			{
-				Name:  "gateway",
-				Usage: "start application",
+				Name:    "gateway",
+				Aliases: []string{"-g"},
+				Usage:   "start application",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					gateway.Init()
 					fmt.Println(gateway.GetScheduleMessages())
@@ -70,10 +68,21 @@ func main() {
 			},
 			{
 				Name:      "schedule",
+				Aliases:   []string{"-s"},
 				Usage:     "whatsapp-notifies schedule --phone 35199999999 --text hello --date '2025-01-01 12:00:00'",
 				ArgsUsage: "--phone <PHONE> --text <TEXT> --date <DATE>",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					api.SqliteConn.Insert(cmd.Args().Get(0), cmd.Args().Get(1), cmd.Args().Get(2))
+					return nil
+				},
+			},
+			{
+				Name:      "version",
+				Aliases:   []string{"-v"},
+				Usage:     "whatsapp-notifies version",
+				ArgsUsage: "",
+				Action: func(ctx context.Context, cmd *cli.Command) error {
+					fmt.Println("whatsapp-notifies version ", VERSION)
 					return nil
 				},
 			},

@@ -16,6 +16,9 @@ This is a go application that allows you to schedule and send messages to your W
 1. Clone the repository
 2. Run `go build`
 
+### Version
+    - 0.0.1
+
 ### Usage
 
 #### Configuration
@@ -78,3 +81,15 @@ curl -X POST -H "Content-Type: application/json" -d '{"phones":["<PHONE1>","<PHO
 
 ```
 curl http://localhost:8080/schedule 
+```
+
+### TODO's
+
+- [ ] Store whatsapp events
+- [ ] Store whatsapp received messages
+- [ ] Add groups support
+- [ ] Endpoint to list received messages
+- [ ] Endpoint to list events
+- [ ] Frontend
+- [ ] Finish Gateway process
+- [ ] Add unit tests
