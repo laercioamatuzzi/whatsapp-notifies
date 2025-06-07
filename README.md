@@ -40,31 +40,41 @@ This is a go application that allows you to schedule and send messages to your W
 
 ### Endpoints
 
-#### ping - just to check if the api is running
+#### ping 
+
+##### a simple ping to check if the application is running
 
 ```
 curl http://localhost:8080/ping
 ```
 
-#### qrcode - get the QR code to scan with your WhatsApp account
+#### qrcode 
+
+##### get the QR code to scan with your WhatsApp account and link with the application
 
 ```
 curl http://localhost:8080/qrcode
 ```
 
-#### text - send a text message with the linked WhatsApp account to a phone number
+#### text 
+
+##### send a text message to a WhatsApp contact using the linked WhatsApp account
 
 ```
 curl -X POST -H "Content-Type: application/json" -d '{"phone":"<PHONE>","text":"<TEXT>"}' http://localhost:8080/text
 ```
 
-#### schedule - schedule a message to send with the linked WhatsApp account
+#### schedule 
+
+##### schedule a message to be sent by the gateway process using the linked WhatsApp account
 
 ```
 curl -X POST -H "Content-Type: application/json" -d '{"phones":["<PHONE1>","<PHONE2>"],"text":"<TEXT>","date":"<DATE>"}' http://localhost:8080/schedule
 ```
 
-#### get schedule messages - list all the scheduled messages that will be sent by the gateway
+#### get schedule messages 
+
+##### get the scheduled messages to be sent by the gateway process
 
 ```
 curl http://localhost:8080/schedule 
