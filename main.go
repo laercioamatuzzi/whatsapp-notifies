@@ -25,9 +25,8 @@ func main() {
 	cmd := &cli.Command{
 		Commands: []*cli.Command{
 			{
-				Name:    "config",
-				Aliases: []string{"-c"},
-				Usage:   "./whatsapp-notifies config",
+				Name:  "config",
+				Usage: "./whatsapp-notifies config",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					fmt.Println("Hello, press enter to start the configuration process, after the api is running acess http://localhost:8080/qrcode to scan the QR code with your WhatsApp account...")
 					scanner := bufio.NewScanner(os.Stdin)
@@ -68,7 +67,6 @@ func main() {
 			},
 			{
 				Name:      "schedule",
-				Aliases:   []string{"-s"},
 				Usage:     "whatsapp-notifies schedule --phone 35199999999 --text hello --date '2025-01-01 12:00:00'",
 				ArgsUsage: "--phone <PHONE> --text <TEXT> --date <DATE>",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
@@ -78,7 +76,6 @@ func main() {
 			},
 			{
 				Name:      "version",
-				Aliases:   []string{"-v"},
 				Usage:     "whatsapp-notifies version",
 				ArgsUsage: "",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
