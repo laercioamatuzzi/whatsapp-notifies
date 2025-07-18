@@ -10,14 +10,15 @@ import (
 )
 
 const (
-	SCHEDULE  = 0
-	SENT      = 1
-	DELIVERED = 2
-	READ      = 3
-	FAILED    = -99
+	SCHEDULED int = 0
+	SENT      int = 1
+	DELIVERED int = 2
+	READ      int = 3
+	FAILED    int = -99
 )
 
 type SqliteConn struct {
+	DBPath string
 }
 
 type ScheduleMessage struct {
@@ -32,7 +33,7 @@ var NOTIFIESDB = os.Getenv("WHATSAPP_NOTIFIES_CONFIG_PATH") + utils.NOTIFIES_DB_
 
 func (s *SqliteConn) Migration() {
 
-	db, err := sql.Open("sqlite3", NOTIFIESDB)
+	db, err := sql.Open("sqlite3", s.DBPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,7 +51,7 @@ func (s *SqliteConn) Migration() {
 
 func (s *SqliteConn) Insert(phone string, text string, date string) {
 
-	db, err := sql.Open("sqlite3", NOTIFIESDB)
+	db, err := sql.Open("sqlite3", s.DBPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,7 +60,7 @@ func (s *SqliteConn) Insert(phone string, text string, date string) {
 	sqlStmt := `
 	insert into schedule (phone, text, date, status) values (?, ?, ?, ?);
 	`
-	_, err = db.Exec(sqlStmt, phone, text, date, SCHEDULE)
+	_, err = db.Exec(sqlStmt, phone, text, date, SCHEDULED)
 	if err != nil {
 		log.Printf("%q: %s\n", err, sqlStmt)
 		return
@@ -68,16 +69,16 @@ func (s *SqliteConn) Insert(phone string, text string, date string) {
 
 func (s *SqliteConn) GetScheduleMessages() []ScheduleMessage {
 
-	db, err := sql.Open("sqlite3", NOTIFIESDB)
+	db, err := sql.Open("sqlite3", s.DBPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
 	sqlStmt := `
-	select * from schedule where status = ? and date <= datetime('now')
+	select id, phone, text, date, status from schedule where status = ? and date <= datetime('now', 'localtime')
 	`
-	rows, err := db.Query(sqlStmt, SCHEDULE)
+	rows, err := db.Query(sqlStmt, SCHEDULED)
 
 	if err != nil {
 		log.Printf("%q: %s\n", err, sqlStmt)
@@ -97,7 +98,83 @@ func (s *SqliteConn) GetScheduleMessages() []ScheduleMessage {
 			log.Printf("%q: %s\n", err, sqlStmt)
 			return nil
 		}
-		scheduleMessages = append(scheduleMessages, ScheduleMessage{Phone: phone, Text: text, Date: date, Status: status})
+		scheduleMessages = append(scheduleMessages, ScheduleMessage{Id: id, Phone: phone, Text: text, Date: date, Status: status})
+	}
+
+	return scheduleMessages
+
+}
+
+func (s *SqliteConn) GetWaitingScheduleMessages() []ScheduleMessage {
+
+	db, err := sql.Open("sqlite3", s.DBPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	sqlStmt := `
+	select id, phone, text, date, status from schedule where status = ?
+	`
+	rows, err := db.Query(sqlStmt, SCHEDULED)
+
+	if err != nil {
+		log.Printf("%q: %s\n", err, sqlStmt)
+		return nil
+	}
+	defer rows.Close()
+
+	var scheduleMessages []ScheduleMessage
+	for rows.Next() {
+		var id int
+		var phone string
+		var text string
+		var date string
+		var status int
+		err := rows.Scan(&id, &phone, &text, &date, &status)
+		if err != nil {
+			log.Printf("%q: %s\n", err, sqlStmt)
+			return nil
+		}
+		scheduleMessages = append(scheduleMessages, ScheduleMessage{Id: id, Phone: phone, Text: text, Date: date, Status: status})
+	}
+
+	return scheduleMessages
+
+}
+
+func (s *SqliteConn) GetAllScheduleMessages() []ScheduleMessage {
+
+	db, err := sql.Open("sqlite3", s.DBPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	sqlStmt := `
+	select id, phone, text, date, status from schedule;
+	`
+	rows, err := db.Query(sqlStmt)
+
+	if err != nil {
+		log.Printf("%q: %s\n", err, sqlStmt)
+		return nil
+	}
+	defer rows.Close()
+
+	var scheduleMessages []ScheduleMessage
+	for rows.Next() {
+		var id int
+		var phone string
+		var text string
+		var date string
+		var status int
+		err := rows.Scan(&id, &phone, &text, &date, &status)
+		if err != nil {
+			log.Printf("%q: %s\n", err, sqlStmt)
+			return nil
+		}
+		scheduleMessages = append(scheduleMessages, ScheduleMessage{Id: id, Phone: phone, Text: text, Date: date, Status: status})
 	}
 
 	return scheduleMessages
@@ -106,14 +183,14 @@ func (s *SqliteConn) GetScheduleMessages() []ScheduleMessage {
 
 func (s *SqliteConn) SetMessageId(messageId string, scheduleMessageId int, statusTo int) error {
 
-	db, err := sql.Open("sqlite3", NOTIFIESDB)
+	db, err := sql.Open("sqlite3", s.DBPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
 	sqlStmt := `
-	update schedule set message_id = ? and status = ? where id = ?;
+	update schedule set message_id = ?, status = ? where id = ?;
 	`
 	_, err = db.Exec(sqlStmt, messageId, statusTo, scheduleMessageId)
 	if err != nil {
@@ -126,7 +203,7 @@ func (s *SqliteConn) SetMessageId(messageId string, scheduleMessageId int, statu
 
 func (s *SqliteConn) UpdateMessageStatus(messageId int, statusTo int) error {
 
-	db, err := sql.Open("sqlite3", NOTIFIESDB)
+	db, err := sql.Open("sqlite3", s.DBPath)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -21,20 +21,20 @@ func main() {
 
 	utils.LoadEnv()
 	api := manager.Api{}
-	gateway := manager.Gateway{}
+	gateway := manager.Gateway{WhatsappWeb: &api.WhatsappWeb}
 	cmd := &cli.Command{
 		Commands: []*cli.Command{
 			{
 				Name:  "config",
 				Usage: "./whatsapp-notifies config",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					fmt.Println("Hello, press enter to start the configuration process, after the api is running acess http://localhost:8080/qrcode to scan the QR code with your WhatsApp account...")
+					fmt.Println("Hello, press enter to start the configuration process, after the api is running access http://localhost:8080/qrcode to scan the QR code with your WhatsApp account...")
 					scanner := bufio.NewScanner(os.Stdin)
 					scanner.Scan()
-					go api.Run()
+					go api.Run(os.Getenv("WHATSAPP_NOTIFIES_CONFIG_PATH") + utils.NOTIFIES_DB_NAME)
 					time.Sleep(time.Second * 2)
 					for {
-						fmt.Println("Acess http://localhost:8080/qrcode scan the QR code with your WhatsApp and wait for the Login event: success message in the terminal, then pressn enter to finish.")
+						fmt.Println("Acess http://localhost:8080/qrcode scan the QR code with your WhatsApp and wait for the Login event: `[Client INFO] Successfully authenticated` message in the terminal, then pressn enter to finish.")
 						scanner = bufio.NewScanner(os.Stdin)
 						scanner.Scan()
 						if api.WhatsappWeb.IsConnected() {
@@ -50,8 +50,8 @@ func main() {
 				Name:  "start-app",
 				Usage: "start application",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					go gateway.Start()
-					api.Run()
+					go gateway.Start(os.Getenv("WHATSAPP_NOTIFIES_CONFIG_PATH") + utils.NOTIFIES_DB_NAME)
+					api.Run(os.Getenv("WHATSAPP_NOTIFIES_CONFIG_PATH") + utils.NOTIFIES_DB_NAME)
 					return nil
 				},
 			},
@@ -60,15 +60,15 @@ func main() {
 				Aliases: []string{"-g"},
 				Usage:   "start application",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					gateway.Init()
+					gateway.Init(os.Getenv("WHATSAPP_NOTIFIES_CONFIG_PATH") + utils.NOTIFIES_DB_NAME)
 					fmt.Println(gateway.GetScheduleMessages())
 					return nil
 				},
 			},
 			{
 				Name:      "schedule",
-				Usage:     "whatsapp-notifies schedule --phone 35199999999 --text hello --date '2025-01-01 12:00:00'",
-				ArgsUsage: "--phone <PHONE> --text <TEXT> --date <DATE>",
+				Usage:     "whatsapp-notifies schedule phone 35199999999 text hello date '2025-01-01 12:00:00'",
+				ArgsUsage: "phone <PHONE> text <TEXT> date <DATE>",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					api.SqliteConn.Insert(cmd.Args().Get(0), cmd.Args().Get(1), cmd.Args().Get(2))
 					return nil

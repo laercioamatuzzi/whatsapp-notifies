@@ -1,17 +1,19 @@
 package manager
 
 import (
+	"fmt"
 	"time"
 	"whatsapp-notifies/connection"
+	"whatsapp-notifies/utils"
 )
 
 type Gateway struct {
-	sqliteConn  connection.SqliteConn
-	WhatsappWeb connection.WhatsAppWeb
+	sqliteConn  *connection.SqliteConn
+	WhatsappWeb *connection.WhatsAppWeb
 }
 
-func (g *Gateway) Init() {
-	g.sqliteConn = connection.SqliteConn{}
+func (g *Gateway) Init(dbPath string) {
+	g.sqliteConn = &connection.SqliteConn{DBPath: dbPath}
 
 }
 
@@ -35,29 +37,32 @@ func (g *Gateway) SendMessage(scheduleMessage connection.ScheduleMessage) (strin
 
 }
 
-func (g *Gateway) Start() {
+func (g *Gateway) Start(dbPath string) {
 
-	g.Init()
-	messagesWithError := []connection.ScheduleMessage{}
-	messagesToRetry := []connection.ScheduleMessage{}
+	g.Init(dbPath)
+	//messagesWithError := []connection.ScheduleMessage{}
+	//messagesToRetry := []connection.ScheduleMessage{}
 
 	for {
 
 		scheduleMessages := g.GetScheduleMessages()
 		for _, scheduleMessage := range scheduleMessages {
-			messesageId, err := g.SendMessage(scheduleMessage)
+
+			messageID, err := g.SendMessage(scheduleMessage)
 			if err != nil {
-				messagesToRetry = append(messagesToRetry, scheduleMessage)
+				utils.LoggingError(fmt.Sprintf("Failed to send message: %v", err))
+				//messagesToRetry = append(messagesToRetry, scheduleMessage)
 				continue
 			}
 
-			err = g.sqliteConn.SetMessageId(messesageId, scheduleMessage.Id, connection.SENT)
+			err = g.sqliteConn.SetMessageId(messageID, scheduleMessage.Id, connection.SENT)
 			if err != nil {
-				messagesWithError = append(messagesWithError, scheduleMessage)
+				//messagesWithError = append(messagesWithError, scheduleMessage)
+				utils.LoggingError(fmt.Sprintf("Failed to set message id: %v", err))
 			}
 
 		}
-		time.Sleep(time.Second * 2)
+		time.Sleep(time.Second * 5)
 	}
 
 }

@@ -22,10 +22,11 @@ import (
 type Api struct {
 	r           *gin.Engine
 	WhatsappWeb connection.WhatsAppWeb
-	SqliteConn  connection.SqliteConn
+	SqliteConn  *connection.SqliteConn
 }
 
-func (a *Api) init() {
+func (a *Api) init(dbPath string) {
+	a.SqliteConn = &connection.SqliteConn{DBPath: dbPath}
 	a.r = gin.Default()
 	a.WhatsappWeb = connection.WhatsAppWeb{Number: connection.WHATSAPPDB}
 	a.WhatsappWeb.Login()
@@ -35,11 +36,12 @@ func (a *Api) init() {
 	a.r.Handle("POST", "text", a.PostText)
 	a.r.Handle("POST", "schedule", a.ScheduleMessage)
 	a.r.Handle("GET", "schedule", a.GetScheduleMessages)
+	a.r.Handle("GET", "schedule/all", a.GetAllMessages)
 
 }
 
-func (a *Api) Run() {
-	a.init()
+func (a *Api) Run(dbPath string) {
+	a.init(dbPath)
 	a.r.Run()
 }
 
@@ -199,7 +201,17 @@ func (a *Api) ScheduleMessage(c *gin.Context) {
 
 func (a *Api) GetScheduleMessages(c *gin.Context) {
 
-	scheduleMessages := a.SqliteConn.GetScheduleMessages()
+	scheduleMessages := a.SqliteConn.GetWaitingScheduleMessages()
+
+	c.JSON(200, gin.H{
+		"message": scheduleMessages,
+	})
+
+}
+
+func (a *Api) GetAllMessages(c *gin.Context) {
+
+	scheduleMessages := a.SqliteConn.GetAllScheduleMessages()
 
 	c.JSON(200, gin.H{
 		"message": scheduleMessages,

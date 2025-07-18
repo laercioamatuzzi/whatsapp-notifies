@@ -281,6 +281,6 @@ func (w *WhatsAppWeb) SendText(jid types.JID, text string) (string, error) {
 		return "", err
 	}
 
-	utils.LoggingInfo(fmt.Sprintf("line [%s] Message Text: [%s] sent to: [%s] message_id: [%s] at: %s", w.Number, text, jid, messageId, ts.Timestamp))
+	utils.LoggingInfo(fmt.Sprintf("[%s] Message Text: [%s] sent to: [%s] message_id: [%s] at: %s", w.GetClientNumber(), text, jid, messageId, ts.Timestamp))
 	return messageId, nil
 }
