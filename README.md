@@ -30,7 +30,7 @@ This is a go application that allows you to schedule and send messages to your W
 
 #### schedule a message using the command line
 
-1. Run `whatsapp-notifies schedule phone <PHONE> text <TEXT> date <DATE>`
+1. Run `whatsapp-notifies schedule --phone <PHONE> --text <TEXT> --date <DATE>`
 
 #### schedule a message using the api
 

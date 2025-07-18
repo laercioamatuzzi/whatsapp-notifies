@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"mime"
-	"net/url"
 	"os"
 	"time"
 	"whatsapp-notifies/utils"
@@ -124,18 +123,16 @@ func (w *WhatsAppWeb) eventHandler(evt interface{}) {
 				suggestionText = suggestion.GetSelectedDisplayText()
 			}
 
-			values := url.Values{
-				"action":          {"message"},
-				"sender":          {from},
-				"receiver":        {w.GetClientNumber()},
-				"message_id":      {messageId},
-				"text":            {text},
-				"file":            {fileb64},
-				"file_type":       {mimeExt},
-				"file_name":       {fileName},
-				"suggestion_id":   {suggestionId},
-				"suggestion_text": {suggestionText},
-				"received_date":   {messageDate},
+			values := map[string]any{
+				"from":            from,
+				"message_id":      messageId,
+				"text":            text,
+				"file":            fileb64,
+				"file_type":       mimeExt,
+				"file_name":       fileName,
+				"suggestion_id":   suggestionId,
+				"suggestion_text": suggestionText,
+				"received_date":   messageDate,
 			}
 
 			if (len(text) > 0 || len(fileb64) > 0) && !v.Info.IsGroup {
@@ -175,13 +172,14 @@ func (w *WhatsAppWeb) eventHandler(evt interface{}) {
 
 			if eventType != "1" {
 				for _, messageId := range v.MessageIDs {
-					values := url.Values{
-						"action":     {"dlr"},
-						"sender":     {w.GetClientNumber()},
-						"receiver":   {v.Sender.User},
-						"message_id": {messageId},
-						"type":       {eventType},
-						"phone_name": {w.Number},
+
+					values := map[string]any{
+						"action":     "dlr",
+						"sender":     w.GetClientNumber(),
+						"receiver":   v.Sender.User,
+						"message_id": messageId,
+						"type":       eventType,
+						"phone":      w.Number,
 					}
 
 					fmt.Println(values)
