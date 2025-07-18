@@ -3,8 +3,6 @@ package connection
 import (
 	"database/sql"
 	"log"
-	"os"
-	"whatsapp-notifies/utils"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -28,8 +26,6 @@ type ScheduleMessage struct {
 	Date   string `json:"date"`
 	Status int    `json:"status"`
 }
-
-var NOTIFIESDB = os.Getenv("WHATSAPP_NOTIFIES_CONFIG_PATH") + utils.NOTIFIES_DB_NAME
 
 func (s *SqliteConn) Migration() {
 

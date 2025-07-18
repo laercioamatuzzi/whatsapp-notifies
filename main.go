@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"whatsapp-notifies/connection"
 	"whatsapp-notifies/manager"
 	"whatsapp-notifies/utils"
 
@@ -66,11 +67,32 @@ func main() {
 				},
 			},
 			{
-				Name:      "schedule",
-				Usage:     "whatsapp-notifies schedule phone 35199999999 text hello date '2025-01-01 12:00:00'",
-				ArgsUsage: "phone <PHONE> text <TEXT> date <DATE>",
+				Name:  "schedule",
+				Usage: "whatsapp-notifies schedule phone 35199999999 text hello date '2025-01-01 12:00:00'",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "phone",
+						Aliases:  []string{"p"},
+						Usage:    "phone",
+						Required: true,
+					},
+					&cli.StringFlag{
+						Name:     "text",
+						Aliases:  []string{"t"},
+						Usage:    "text",
+						Required: true,
+					},
+					&cli.StringFlag{
+						Name:     "date",
+						Aliases:  []string{"d"},
+						Usage:    "date",
+						Required: true,
+					},
+				},
+				ArgsUsage: "--phone <PHONE> --text <TEXT> --date <DATE>",
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					api.SqliteConn.Insert(cmd.Args().Get(0), cmd.Args().Get(1), cmd.Args().Get(2))
+					sqliteConn := &connection.SqliteConn{DBPath: os.Getenv("WHATSAPP_NOTIFIES_CONFIG_PATH") + utils.NOTIFIES_DB_NAME}
+					sqliteConn.Insert(cmd.String("phone"), cmd.String("text"), cmd.String("date"))
 					return nil
 				},
 			},
